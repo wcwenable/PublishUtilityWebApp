@@ -30,7 +30,14 @@
 @section Scripts{
     <script>
         $(function () {
-            alert("加载完毕");
+            $("#doSearch").click(function () {
+                $.post("/Home/DoSearchForPublish", {
+                    sourceDir: $("#sourceDir").val(),
+                    searchKey: $("#searchKey").val()
+                }, function (ret) {
+                    console.log("ret:", ret);
+                });
+            });
         });
     </script>
 }
