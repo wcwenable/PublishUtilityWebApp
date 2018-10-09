@@ -18,7 +18,7 @@ namespace PublishUtilityWebApp.Controllers
 
         public IActionResult ProcessForPublish(string sourceDir)
         {
-            ViewBag.sourceDir = sourceDir;
+            ViewBag.sourceDir = sourceDir;  
             return View();
         }
 
