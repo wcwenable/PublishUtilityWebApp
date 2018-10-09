@@ -1,4 +1,4 @@
-@{
+﻿@{
     ViewData["Title"] = "发布有我";
 }
 
@@ -6,8 +6,31 @@
     .selfContainer {
         padding-top: 21px;
     }
+
+    form > div{
+       margin:20px; 
+    }
 </style>
 
 <div class="selfContainer">
-    Hello World
+    <form action="/Home/ProcessForPublish">
+        <div id="dvSourceDir">
+            <input type="text" placeholder="请您输入根目录" id="sourceDir" name="sourceDir" />
+        </div>
+        <div id="dvSearchKey">
+            <input type="text" placeholder="请您输入文件名关键字" id="searchKey" name="searchKey" />
+            <input type="button" id="doSearch" value="搜索" />
+        </div>
+        <div>
+            <input type="submit" value="保存" />
+        </div>
+    </form>
 </div>
+
+@section Scripts{
+    <script>
+        $(function () {
+            alert("加载完毕");
+        });
+    </script>
+}

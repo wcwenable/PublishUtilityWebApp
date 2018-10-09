@@ -15,6 +15,13 @@ namespace PublishUtilityWebApp.Controllers
             return View();
         }
 
+
+        public IActionResult ProcessForPublish(string sourceDir)
+        {
+            ViewBag.sourceDir = sourceDir;
+            return View();
+        }
+
         public IActionResult About()
         {
             ViewData["Message"] = "Your application description page.";
