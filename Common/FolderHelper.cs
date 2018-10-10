@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -27,6 +27,33 @@ namespace PublishUtilityWebApp.Common
                 {
                     subdir.Delete();
                 }
+            }
+        }
+
+
+        /// <summary>
+        /// 用于获取指定路径（path）下的文件名中包含关键词的文件全名列表
+        /// </summary>
+        /// <param name="path">路径</param>
+        /// <param name="searchKey">关键词</param>
+        /// <param name="lRet">文件名中包含关键词的文件全名列表</param>
+        public static void GetAllFileByKeyWord(string path, string searchKey,IList<string> lRet)
+        {
+            DirectoryInfo theFolder = new DirectoryInfo(@path);
+
+            //遍历文件
+            foreach (FileInfo NextFile in theFolder.GetFiles())
+            {
+                if (NextFile.Name.Contains(searchKey.Trim()))
+                {
+                    lRet.Add(NextFile.FullName);
+                }
+            }
+
+            //遍历文件夹
+            foreach (DirectoryInfo NextFolder in theFolder.GetDirectories())
+            {
+                GetAllFileByKeyWord(NextFolder.FullName, searchKey, lRet);
             }
         }
     }
