@@ -7,8 +7,8 @@
         padding-top: 21px;
     }
 
-    form > div{
-       margin:20px; 
+    form > div {
+        margin: 20px;
     }
 </style>
 
@@ -21,8 +21,18 @@
             <input type="text" placeholder="请您输入文件名关键字" id="searchKey" name="searchKey" />
             <input type="button" id="doSearch" value="搜索" />
         </div>
+        <div id="dvSearchResult" style="border: 1px rgba(0,0,0,.075) groove;">
+            <h3>搜索结果</h3>
+            <div class="am-g">
+                <div class="am-u-sm-12">
+                    <label class="am-checkbox">
+                        <input type="checkbox" value="" data-am-ucheck>没有选中
+                    </label>
+                </div>
+            </div>
+        </div>
         <div>
-            <input type="submit" value="保存" />  
+            <input type="submit" value="保存" />
         </div>
     </form>
 </div>
@@ -30,12 +40,19 @@
 @section Scripts{
     <script>
         $(function () {
+            $("#search-alert").hide();
             $("#doSearch").click(function () {
                 $.post("/Home/DoSearchForPublish", {
                     sourceDir: $("#sourceDir").val(),
                     searchKey: $("#searchKey").val()
                 }, function (ret) {
                     console.log("ret:", ret);
+                    if (!ret.bRet) {
+                        $("<div class='am-alert' id='search-alert'> <button type='button' class='am-close'>&times;</button> <p></p> </div>").insertBefore("#dvSearchResult");
+                        $("#search-alert>p").text(ret.msg);
+                        $("#search-alert").alert();
+                    } else {
+                    }
                 });
             });
         });
