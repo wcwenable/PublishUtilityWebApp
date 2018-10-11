@@ -23,13 +23,9 @@
         </div>
         <div id="dvSearchResult" style="border: 1px rgba(0,0,0,.075) groove;">
             <h3>搜索结果</h3>
-            <div class="am-g">
-                <div class="am-u-sm-12">
-                    <label class="am-checkbox">
-                        <input type="checkbox" value="" data-am-ucheck>没有选中
-                    </label>
-                </div>
-            </div>
+        </div>
+        <div id="dvSaveSection" style="border: 1px rgba(0,0,0,.075) groove;">
+            <h3>保留区</h3>
         </div>
         <div>
             <input type="submit" value="保存" />
@@ -52,6 +48,14 @@
                         $("#search-alert>p").text(ret.msg);
                         $("#search-alert").alert();
                     } else {
+                        var temp;
+                        for (var i = 0; i < ret.data.length; i++) {
+                            temp = ret.data[i].replace(/\\|:|\./g, "");
+                            //console.log("temp:",temp);
+                            $("#dvSearchResult").append(" <div class='am-g'  id='" + temp + "'> <div class='am-u-sm-12'> <label class='am-checkbox'><input type='checkbox' value='' data-am-ucheck></label> </div> </div>");
+                            $("#" + temp + " label").append(ret.data[i]);
+                        }
+
                     }
                 });
             });
