@@ -42,6 +42,7 @@
                     sourceDir: $("#sourceDir").val(),
                     searchKey: $("#searchKey").val()
                 }, function (ret) {
+                    $("#dvSearchResult > div").remove();//清空上一次搜索的结果
                     console.log("ret:", ret);
                     if (!ret.bRet) {
                         $("<div class='am-alert' id='search-alert'> <button type='button' class='am-close'>&times;</button> <p></p> </div>").insertBefore("#dvSearchResult");
@@ -52,13 +53,23 @@
                         for (var i = 0; i < ret.data.length; i++) {
                             temp = ret.data[i].replace(/\\|:|\./g, "");
                             //console.log("temp:",temp);
-                            $("#dvSearchResult").append(" <div class='am-g'  id='" + temp + "'> <div class='am-u-sm-12'> <label class='am-checkbox'><input type='checkbox' value='' data-am-ucheck></label> </div> </div>");
-                            $("#" + temp + " label").append(ret.data[i]);
+                            $("#dvSearchResult").append(" <div class='am-g'> <div class='am-u-sm-12'> <label class='am-checkbox'  id='" + temp + "'><input type='checkbox' value='' data-am-ucheck></label> </div> </div>");
+                            $("#" + temp).append(ret.data[i]);
+                            $("#" + temp + " input").unbind().click(function (e) {
+                                var eleInput = e.target;
+                                console.log("e", e);
+                                console.log("eleInput.checked", eleInput.checked, eleInput.parentElement.id, eleInput.parentElement.innerText);
+                            });
                         }
 
+
+                       
+
                     }
-                });
+                    });
             });
+
+           
         });
     </script>
 }
