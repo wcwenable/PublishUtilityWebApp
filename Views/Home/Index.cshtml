@@ -36,6 +36,7 @@
 @section Scripts{
     <script>
         $(function () {
+            var reserveAreaData = [];
             $("#search-alert").hide();
             $("#doSearch").click(function () {
                 $.post("/Home/DoSearchForPublish", {
@@ -54,11 +55,21 @@
                             temp = ret.data[i].replace(/\\|:|\./g, "");
                             //console.log("temp:",temp);
                             $("#dvSearchResult").append(" <div class='am-g'> <div class='am-u-sm-12'> <label class='am-checkbox'  id='" + temp + "'><input type='checkbox' value='' data-am-ucheck></label> </div> </div>");
-                            $("#" + temp).append(ret.data[i]);
-                            $("#" + temp + " input").unbind().click(function (e) {
+                            $("#dvSearchResult #" + temp).append(ret.data[i]);
+                            $("#dvSearchResult #" + temp + " input").unbind().click(function (e) {
                                 var eleInput = e.target;
                                 console.log("e", e);
                                 console.log("eleInput.checked", eleInput.checked, eleInput.parentElement.id, eleInput.parentElement.innerText);
+                                if (eleInput.checked/*选中*/) {
+                                    reserveAreaData.push(eleInput.parentElement.innerText);
+                                } else/*不选中*/ {
+                                    reserveAreaData.splice(reserveAreaData.indexOf(eleInput.parentElement.innerText), 1);
+                                }
+                                console.log("reserveAreaData:", reserveAreaData);
+                                $("#dvSaveSection > div").remove();//清空上一次搜索的结果
+                                for (var i = 0; i < reserveAreaData.length; i++) {
+                                    $("#dvSaveSection").append("<div><label  id='" + temp + "'>" + reserveAreaData[i]+"</label></div>");
+                                }
                             });
                         }
 

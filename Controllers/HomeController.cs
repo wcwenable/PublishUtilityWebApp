@@ -18,12 +18,13 @@ namespace PublishUtilityWebApp.Controllers
         }
 
 
-        public IActionResult ProcessForPublish(string sourceDir)
+        public IActionResult ProcessForPublish(string sourceDir, IList<string> reservedFiles)
         {
             string msg = string.Empty;//默认成功
             msg = CheckSourceDirExists(sourceDir, msg);
             if (string.IsNullOrWhiteSpace(msg))//源目录存在
             {
+                FolderHelper.DeleteAllNonRelevantFiles(sourceDir,reservedFiles);
                 ViewBag.sourceDir = sourceDir;   
             }
             return View();

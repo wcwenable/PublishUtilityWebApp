@@ -16,7 +16,7 @@ namespace PublishUtilityWebApp.Common
         /// 所有没有子“文件系统”的都将被删除
         /// </summary>
         /// <param name="storagepath"></param>
-        public static void DeleteEmptyDirectory(string storagepath)
+        private static void DeleteEmptyDirectory(string storagepath)
         {
             DirectoryInfo dir = new DirectoryInfo(storagepath);
             DirectoryInfo[] subdirs = dir.GetDirectories("*.*", SearchOption.AllDirectories);
@@ -30,6 +30,12 @@ namespace PublishUtilityWebApp.Common
             }
         }
 
+        public static void DeleteAllNonRelevantFiles(string path, IList<string> reservedFiles)
+        {
+            DeleteFiles(path,reservedFiles);
+            DeleteEmptyDirectory(path);
+        }
+
 
         /// <summary>
         /// 用于获取指定路径（path）下的文件名中包含关键词的文件全名列表
@@ -37,7 +43,7 @@ namespace PublishUtilityWebApp.Common
         /// <param name="path">路径</param>
         /// <param name="searchKey">关键词</param>
         /// <param name="lRet">文件名中包含关键词的文件全名列表</param>
-        public static void GetAllFileByKeyWord(string path, string searchKey,IList<string> lRet)
+        public static void GetAllFileByKeyWord(string path, string searchKey, IList<string> lRet)
         {
             DirectoryInfo theFolder = new DirectoryInfo(@path);
 
@@ -56,5 +62,26 @@ namespace PublishUtilityWebApp.Common
                 GetAllFileByKeyWord(NextFolder.FullName, searchKey, lRet);
             }
         }
-    }
+
+        private static void DeleteFiles(string path,IList<string> reservedFiles)
+        {
+
+            DirectoryInfo theFolder = new DirectoryInfo(@path);
+
+            //遍历文件
+            foreach (FileInfo NextFile in theFolder.GetFiles())
+            {
+                if (!reservedFiles.Contains(NextFile.FullName))
+                {
+                    Directory.Delete(NextFile.FullName);
+                }
+            }
+
+            //遍历文件夹
+            foreach (DirectoryInfo NextFolder in theFolder.GetDirectories())
+            {
+                DeleteFiles(NextFolder.FullName, reservedFiles);
+            }
+        }
+}
 }
