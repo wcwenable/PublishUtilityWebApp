@@ -13,7 +13,7 @@
 </style>
 
 <div class="selfContainer">
-    <form action="/Home/ProcessForPublish">
+    <form action="#">
         <div id="dvSourceDir">
             <input type="text" placeholder="请您输入根目录" id="sourceDir" name="sourceDir" style="width: 80%;" />
         </div>
@@ -27,8 +27,8 @@
         <div id="dvSaveSection" style="border: 1px rgba(0,0,0,.075) groove;">
             <h3>保留区</h3>
         </div>
-        <div>
-            <input type="submit" value="保存" />
+        <div id="dvSaveBtn">
+            <input type="button" id="saveResult" value="保存" />
         </div>
     </form>
 </div>
@@ -46,9 +46,7 @@
                     $("#dvSearchResult > div").remove();//清空上一次搜索的结果
                     console.log("ret:", ret);
                     if (!ret.bRet) {
-                        $("<div class='am-alert' id='search-alert'> <button type='button' class='am-close'>&times;</button> <p></p> </div>").insertBefore("#dvSearchResult");
-                        $("#search-alert>p").text(ret.msg);
-                        $("#search-alert").alert();
+                        myAlert("#dvSearchResult", ret.msg);
                     } else {
                         var temp;
                         for (var i = 0; i < ret.data.length; i++) {
@@ -68,19 +66,33 @@
                                 console.log("reserveAreaData:", reserveAreaData);
                                 $("#dvSaveSection > div").remove();//清空上一次搜索的结果
                                 for (var i = 0; i < reserveAreaData.length; i++) {
-                                    $("#dvSaveSection").append("<div><label  id='" + temp + "'>" + reserveAreaData[i]+"</label></div>");
+                                    $("#dvSaveSection").append("<div><label  id='" + temp + "'>" + reserveAreaData[i] + "</label></div>");
                                 }
                             });
                         }
 
 
-                       
+
 
                     }
-                    });
+                });
             });
 
-           
+            $("#saveResult").click(function () {
+                $.post("/Home/ProcessForPublish", {
+                    sourceDir: $("#sourceDir").val(),
+                    reservedFiles: reserveAreaData
+                }, function (ret) {
+                    console.log("saveResult-ret:", ret);
+                    myAlert("#dvSaveBtn", ret.bRet ? "保存成功" : ret.msg);
+                });
+            });
         });
+
+        function myAlert(jqEleId,msg) {
+            $("<div class='am-alert' id='search-alert'> <button type='button' class='am-close'>&times;</button> <p></p> </div>").insertBefore(jqEleId);
+            $("#search-alert>p").text(msg);
+            $("#search-alert").alert();
+        }
     </script>
 }

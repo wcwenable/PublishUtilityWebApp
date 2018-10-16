@@ -34,6 +34,7 @@ namespace PublishUtilityWebApp.Common
         {
             DeleteFiles(path,reservedFiles);
             DeleteEmptyDirectory(path);
+            DeleteEmptyDirectory(path);
         }
 
 
@@ -73,7 +74,7 @@ namespace PublishUtilityWebApp.Common
             {
                 if (!reservedFiles.Contains(NextFile.FullName))
                 {
-                    Directory.Delete(NextFile.FullName);
+                    File.Delete(NextFile.FullName);
                 }
             }
 

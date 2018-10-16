@@ -17,17 +17,29 @@ namespace PublishUtilityWebApp.Controllers
             return View();
         }
 
-
+        [HttpPost]
         public IActionResult ProcessForPublish(string sourceDir, IList<string> reservedFiles)
         {
             string msg = string.Empty;//默认成功
             msg = CheckSourceDirExists(sourceDir, msg);
             if (string.IsNullOrWhiteSpace(msg))//源目录存在
             {
-                FolderHelper.DeleteAllNonRelevantFiles(sourceDir,reservedFiles);
-                ViewBag.sourceDir = sourceDir;   
+                if (reservedFiles.Any())
+                {
+                    FolderHelper.DeleteAllNonRelevantFiles(sourceDir, reservedFiles);
+                    ViewBag.sourceDir = sourceDir;
+                }
+                else
+                {
+                    msg = "保存失败：保留区中并无可保留文件。";
+                }
             }
-            return View();
+            return Json(new
+            {
+                bRet = string.IsNullOrWhiteSpace(msg),
+                msg,
+                data = string.IsNullOrWhiteSpace(msg) ? "保存成功" : null
+            });
         }
 
         [HttpPost]
@@ -38,8 +50,15 @@ namespace PublishUtilityWebApp.Controllers
             msg = CheckSourceDirExists(sourceDir, msg);
             if (string.IsNullOrWhiteSpace(msg))//源目录存在
             {
-                //在源目录中查找所有这样的文件（需要包含文件目录）：其文件名中含有搜索关键字
-                FolderHelper.GetAllFileByKeyWord(sourceDir, searchKey, lRet);
+                if (!string.IsNullOrWhiteSpace(searchKey))
+                {
+                    //在源目录中查找所有这样的文件（需要包含文件目录）：其文件名中含有搜索关键字
+                    FolderHelper.GetAllFileByKeyWord(sourceDir, searchKey, lRet);
+                }
+                else
+                {
+                    msg = "请先输入文件名关键字！";
+                }
             }
             return Json(new
             {
