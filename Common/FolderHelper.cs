@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.AspNetCore.Http;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace PublishUtilityWebApp.Common
     /// <summary>
     /// 文件夹操作辅助类
     /// </summary>
-    public class FolderHelper
+    public static class FolderHelper
     {
         /// <summary>
         /// 删除掉空文件夹
@@ -29,10 +30,25 @@ namespace PublishUtilityWebApp.Common
                 }
             }
         }
+        /// <summary>
+        /// 获取客户Ip
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
+        public static string GetClientUserIp(this HttpContext context)
+        {
+            var ip = context.Request.Headers["X-Forwarded-For"].FirstOrDefault();
+            if (string.IsNullOrEmpty(ip))
+            {
+                ip = context.Connection.RemoteIpAddress.ToString();
+            }
+            return ip;
+        }
+
 
         public static void DeleteAllNonRelevantFiles(string path, IList<string> reservedFiles)
         {
-            DeleteFiles(path,reservedFiles);
+            DeleteFiles(path, reservedFiles);
             DeleteEmptyDirectory(path);
             DeleteEmptyDirectory(path);
         }
@@ -64,7 +80,7 @@ namespace PublishUtilityWebApp.Common
             }
         }
 
-        private static void DeleteFiles(string path,IList<string> reservedFiles)
+        private static void DeleteFiles(string path, IList<string> reservedFiles)
         {
 
             DirectoryInfo theFolder = new DirectoryInfo(@path);
@@ -84,5 +100,5 @@ namespace PublishUtilityWebApp.Common
                 DeleteFiles(NextFolder.FullName, reservedFiles);
             }
         }
-}
+    }
 }

@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using PublishUtilityWebApp.Common;
 using PublishUtilityWebApp.Models;
@@ -20,52 +21,78 @@ namespace PublishUtilityWebApp.Controllers
         [HttpPost]
         public IActionResult ProcessForPublish(string sourceDir, IList<string> reservedFiles)
         {
-            string msg = string.Empty;//默认成功
-            msg = CheckSourceDirExists(sourceDir, msg);
-            if (string.IsNullOrWhiteSpace(msg))//源目录存在
+            try
             {
-                if (reservedFiles.Any())
+                string msg = string.Empty;//默认成功
+                var rootPath = string.Format(@"\\{0}\{1}", FolderHelper.GetClientUserIp(new HttpContextAccessor().HttpContext), sourceDir);
+                msg = CheckSourceDirExists(rootPath, msg);
+                if (string.IsNullOrWhiteSpace(msg))//源目录存在
                 {
-                    FolderHelper.DeleteAllNonRelevantFiles(sourceDir, reservedFiles);
-                    ViewBag.sourceDir = sourceDir;
+                    if (reservedFiles.Any())
+                    {
+                        FolderHelper.DeleteAllNonRelevantFiles(sourceDir, reservedFiles);
+                        ViewBag.sourceDir = sourceDir;
+                    }
+                    else
+                    {
+                        msg = "保存失败：保留区中并无可保留文件。";
+                    }
                 }
-                else
+                return Json(new
                 {
-                    msg = "保存失败：保留区中并无可保留文件。";
-                }
+                    bRet = string.IsNullOrWhiteSpace(msg),
+                    msg,
+                    data = string.IsNullOrWhiteSpace(msg) ? "保存成功" : null
+                });
             }
-            return Json(new
+            catch (Exception ex)
             {
-                bRet = string.IsNullOrWhiteSpace(msg),
-                msg,
-                data = string.IsNullOrWhiteSpace(msg) ? "保存成功" : null
-            });
+                return Json(new
+                {
+                    bRet = false,
+                    msg=ex.ToString(),
+                    data = "保存失败"
+                });
+            }
         }
 
         [HttpPost]
         public IActionResult DoSearchForPublish(string sourceDir,string searchKey)
         {
-            var lRet = new List<string>();
-            string msg = string.Empty;//默认成功
-            msg = CheckSourceDirExists(sourceDir, msg);
-            if (string.IsNullOrWhiteSpace(msg))//源目录存在
+            try
             {
-                if (!string.IsNullOrWhiteSpace(searchKey))
+                var lRet = new List<string>();
+                string msg = string.Empty;//默认成功
+                var rootPath = string.Format(@"\\{0}\{1}", FolderHelper.GetClientUserIp(new HttpContextAccessor().HttpContext), sourceDir);
+                msg = CheckSourceDirExists(rootPath, msg);
+                if (string.IsNullOrWhiteSpace(msg))//源目录存在
                 {
-                    //在源目录中查找所有这样的文件（需要包含文件目录）：其文件名中含有搜索关键字
-                    FolderHelper.GetAllFileByKeyWord(sourceDir, searchKey, lRet);
+                    if (!string.IsNullOrWhiteSpace(searchKey))
+                    {
+                        //在源目录中查找所有这样的文件（需要包含文件目录）：其文件名中含有搜索关键字
+                        FolderHelper.GetAllFileByKeyWord(sourceDir, searchKey, lRet);
+                    }
+                    else
+                    {
+                        msg = "请先输入文件名关键字！";
+                    }
                 }
-                else
+                return Json(new
                 {
-                    msg = "请先输入文件名关键字！";
-                }
+                    bRet = string.IsNullOrWhiteSpace(msg),
+                    msg,
+                    data = string.IsNullOrWhiteSpace(msg) ? lRet : null
+                });
             }
-            return Json(new
+            catch (Exception ex)
             {
-                bRet = string.IsNullOrWhiteSpace(msg),
-                msg,
-                data = string.IsNullOrWhiteSpace(msg) ? lRet : null
-            });
+                return Json(new
+                {
+                    bRet = false,
+                    msg = ex.ToString(),
+                    data = "搜索失败"
+                });
+            }
         }
 
         private static string CheckSourceDirExists(string sourceDir, string msg)
