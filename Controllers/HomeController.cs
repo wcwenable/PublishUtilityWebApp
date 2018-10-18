@@ -24,14 +24,14 @@ namespace PublishUtilityWebApp.Controllers
             try
             {
                 string msg = string.Empty;//默认成功
-                var rootPath = string.Format(@"\\{0}\{1}", FolderHelper.GetClientUserIp(new HttpContextAccessor().HttpContext), sourceDir);
+                var rootPath = string.Format(@"\\{0}\{1}", HttpContext.GetClientUserIp(), sourceDir);
+                rootPath = sourceDir;
                 msg = CheckSourceDirExists(rootPath, msg);
                 if (string.IsNullOrWhiteSpace(msg))//源目录存在
                 {
                     if (reservedFiles.Any())
                     {
-                        FolderHelper.DeleteAllNonRelevantFiles(sourceDir, reservedFiles);
-                        ViewBag.sourceDir = sourceDir;
+                        FolderHelper.DeleteAllNonRelevantFiles(rootPath, reservedFiles);
                     }
                     else
                     {
@@ -63,14 +63,15 @@ namespace PublishUtilityWebApp.Controllers
             {
                 var lRet = new List<string>();
                 string msg = string.Empty;//默认成功
-                var rootPath = string.Format(@"\\{0}\{1}", FolderHelper.GetClientUserIp(new HttpContextAccessor().HttpContext), sourceDir);
+                var rootPath = string.Format(@"\\{0}\{1}", HttpContext.GetClientUserIp(), sourceDir);
+                rootPath = sourceDir;
                 msg = CheckSourceDirExists(rootPath, msg);
                 if (string.IsNullOrWhiteSpace(msg))//源目录存在
                 {
                     if (!string.IsNullOrWhiteSpace(searchKey))
                     {
                         //在源目录中查找所有这样的文件（需要包含文件目录）：其文件名中含有搜索关键字
-                        FolderHelper.GetAllFileByKeyWord(sourceDir, searchKey, lRet);
+                        FolderHelper.GetAllFileByKeyWord(rootPath, searchKey, lRet);
                     }
                     else
                     {
@@ -103,6 +104,7 @@ namespace PublishUtilityWebApp.Controllers
             }
 
             return msg;
+            //return FolderHelper.RemoteFileExists(sourceDir);
         }
 
         public IActionResult About()

@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
 
 namespace PublishUtilityWebApp.Common
@@ -49,7 +50,6 @@ namespace PublishUtilityWebApp.Common
         public static void DeleteAllNonRelevantFiles(string path, IList<string> reservedFiles)
         {
             DeleteFiles(path, reservedFiles);
-            DeleteEmptyDirectory(path);
             DeleteEmptyDirectory(path);
         }
 
@@ -100,5 +100,47 @@ namespace PublishUtilityWebApp.Common
                 DeleteFiles(NextFolder.FullName, reservedFiles);
             }
         }
+
+
+
+        #region 判断远程文件是否存在
+        /// <summary>
+        /// 判断远程文件是否存在
+        /// </summary>
+        /// <param name="fileUrl"></param>
+        /// <returns></returns>
+        public static string RemoteFileExists(string fileUrl)
+        {
+            HttpWebRequest re = null;
+            HttpWebResponse res = null;
+            try
+            {
+                re = (HttpWebRequest)WebRequest.Create(fileUrl);
+                res = (HttpWebResponse)re.GetResponse();
+                if (res.ContentLength != 0)
+                {
+                    //MessageBox.Show("文件存在");
+                    return string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                //MessageBox.Show("无此文件");
+                return ex.ToString();
+            }
+            finally
+            {
+                if (re != null)
+                {
+                    re.Abort();//销毁关闭连接
+                }
+                if (res != null)
+                {
+                    res.Close();//销毁关闭响应
+                }
+            }
+            return "目录或文件不存在";
+        }
+        #endregion
     }
 }
